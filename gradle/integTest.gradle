@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+
+sourceSets {
+    integTest {
+        resources.srcDir file('src/integTest/resources')
+        groovy {
+            srcDir 'src/integTest/groovy'
+        }
+    }
+}
+
+dependencies {
+    integTestCompile 'org.codehaus.groovy:groovy-all:2.4.4'
+    integTestCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+ext {
+    integTestReportDir = file("$test.reports.html.destination/functional")
+    integTestResultsDir = file("$test.reports.junitXml.destination/functional")
+}
+
+task integTest(type: Test) {
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+    reports.html.destination = integTestReportDir
+    reports.junitXml.destination = integTestResultsDir
+}
+
+check.dependsOn integTest
+integTest.mustRunAfter test
